@@ -96,6 +96,8 @@ var todomvc = Elm.Todo.fullscreen(startingState);
 todomvc.ports.setStorage.subscribe(function(state) {
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
 });
+
+navigator.serviceWorker.register("/service-worker.js");
 </script>
 
 </html>
