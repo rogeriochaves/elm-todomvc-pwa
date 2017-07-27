@@ -4,12 +4,13 @@ port module Todo exposing (..)
 
 This application is broken up into three key parts:
 
-  1. Model  - a full definition of the application's state
-  2. Update - a way to step the application state forward
-  3. View   - a way to visualize our application state with HTML
+1.  Model - a full definition of the application's state
+2.  Update - a way to step the application state forward
+3.  View - a way to visualize our application state with HTML
 
 This clean division of concerns is a core part of Elm. You can read more about
 this in <http://guide.elm-lang.org/architecture/index.html>
+
 -}
 
 import Dom
@@ -17,7 +18,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed as Keyed
-import Html.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
 import String
 import Task
@@ -45,16 +45,16 @@ updateWithStorage msg model =
         ( newModel, cmds ) =
             update msg model
     in
-        ( newModel
-        , Cmd.batch [ setStorage newModel, cmds ]
-        )
+    ( newModel
+    , Cmd.batch [ setStorage newModel, cmds ]
+    )
 
 
 
 -- MODEL
-
-
 -- The full application state of our todo app.
+
+
 type alias Model =
     { entries : List Entry
     , field : String
@@ -117,6 +117,8 @@ type Msg
 
 
 -- How we update our Model on a given Msg?
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -150,8 +152,8 @@ update msg model =
                 focus =
                     Dom.focus ("todo-" ++ toString id)
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! [ Task.attempt (\_ -> NoOp) focus ]
+            { model | entries = List.map updateEntry model.entries }
+                ! [ Task.attempt (\_ -> NoOp) focus ]
 
         UpdateEntry id task ->
             let
@@ -161,8 +163,8 @@ update msg model =
                     else
                         t
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! []
+            { model | entries = List.map updateEntry model.entries }
+                ! []
 
         Delete id ->
             { model | entries = List.filter (\t -> t.id /= id) model.entries }
@@ -180,16 +182,16 @@ update msg model =
                     else
                         t
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! []
+            { model | entries = List.map updateEntry model.entries }
+                ! []
 
         CheckAll isCompleted ->
             let
                 updateEntry t =
                     { t | completed = isCompleted }
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! []
+            { model | entries = List.map updateEntry model.entries }
+                ! []
 
         ChangeVisibility visibility ->
             { model | visibility = visibility }
@@ -208,9 +210,9 @@ view model =
         ]
         [ section
             [ class "todoapp" ]
-            [ lazy viewInput model.field
-            , lazy2 viewEntries model.visibility model.entries
-            , lazy2 viewControls model.visibility model.entries
+            [ viewInput model.field
+            , viewEntries model.visibility model.entries
+            , viewControls model.visibility model.entries
             ]
         , infoFooter
         ]
@@ -243,7 +245,7 @@ onEnter msg =
             else
                 Json.fail "not ENTER"
     in
-        on "keydown" (Json.andThen isEnter keyCode)
+    on "keydown" (Json.andThen isEnter keyCode)
 
 
 
@@ -273,24 +275,24 @@ viewEntries visibility entries =
             else
                 "visible"
     in
-        section
-            [ class "main"
-            , style [ ( "visibility", cssVisibility ) ]
+    section
+        [ class "main"
+        , style [ ( "visibility", cssVisibility ) ]
+        ]
+        [ input
+            [ class "toggle-all"
+            , type_ "checkbox"
+            , name "toggle"
+            , checked allCompleted
+            , onClick (CheckAll (not allCompleted))
             ]
-            [ input
-                [ class "toggle-all"
-                , type_ "checkbox"
-                , name "toggle"
-                , checked allCompleted
-                , onClick (CheckAll (not allCompleted))
-                ]
-                []
-            , label
-                [ for "toggle-all" ]
-                [ text "Mark all as complete" ]
-            , Keyed.ul [ class "todo-list" ] <|
-                List.map viewKeyedEntry (List.filter isVisible entries)
-            ]
+            []
+        , label
+            [ for "toggle-all" ]
+            [ text "Mark all as complete" ]
+        , Keyed.ul [ class "todo-list" ] <|
+            List.map viewKeyedEntry (List.filter isVisible entries)
+        ]
 
 
 
@@ -299,7 +301,7 @@ viewEntries visibility entries =
 
 viewKeyedEntry : Entry -> ( String, Html Msg )
 viewKeyedEntry todo =
-    ( toString todo.id, lazy viewEntry todo )
+    ( toString todo.id, viewEntry todo )
 
 
 viewEntry : Entry -> Html Msg
@@ -350,14 +352,14 @@ viewControls visibility entries =
         entriesLeft =
             List.length entries - entriesCompleted
     in
-        footer
-            [ class "footer"
-            , hidden (List.isEmpty entries)
-            ]
-            [ lazy viewControlsCount entriesLeft
-            , lazy viewControlsFilters visibility
-            , lazy viewControlsClear entriesCompleted
-            ]
+    footer
+        [ class "footer"
+        , hidden (List.isEmpty entries)
+        ]
+        [ viewControlsCount entriesLeft
+        , viewControlsFilters visibility
+        , viewControlsClear entriesCompleted
+        ]
 
 
 viewControlsCount : Int -> Html Msg
@@ -369,11 +371,11 @@ viewControlsCount entriesLeft =
             else
                 " items"
     in
-        span
-            [ class "todo-count" ]
-            [ strong [] [ text (toString entriesLeft) ]
-            , text (item_ ++ " left")
-            ]
+    span
+        [ class "todo-count" ]
+        [ strong [] [ text (toString entriesLeft) ]
+        , text (item_ ++ " left")
+        ]
 
 
 viewControlsFilters : String -> Html Msg
@@ -421,3 +423,10 @@ infoFooter =
             , a [ href "http://todomvc.com" ] [ text "TodoMVC" ]
             ]
         ]
+
+
+prerenderedView : Html Msg
+prerenderedView =
+    init Nothing
+        |> Tuple.first
+        |> view

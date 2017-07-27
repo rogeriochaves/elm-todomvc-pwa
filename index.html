@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Elm • TodoMVC</title>
-  <script type="text/javascript" src="elm.js"></script>
   <link rel="stylesheet" href="style.css">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
@@ -18,9 +17,79 @@
 </head>
 
 <body>
+  <div class="todomvc-wrapper" style="visibility:hidden;">
+      <section class="todoapp">
+          <header class="header">
+              <h1>
+                  todos
+              </h1>
+              <input class="new-todo" name="newTodo" placeholder="What needs to be done?" value="" autofocus=true>
+              </input>
+          </header>
+          <section class="main" style="visibility:hidden;">
+              <input class="toggle-all" name="toggle" type="checkbox" checked=true>
+              </input>
+              <label htmlFor="toggle-all">
+                  Mark all as complete
+              </label>
+              <ul class="todo-list">
+              </ul>
+          </section>
+          <footer class="footer" hidden=true>
+              <span class="todo-count">
+                  <strong>
+                      0
+                  </strong>
+                   items left
+              </span>
+              <ul class="filters">
+                  <li>
+                      <a class="selected" href="#/">
+                          All
+                      </a>
+                  </li>
+
+                  <li>
+                      <a class="" href="#/active">
+                          Active
+                      </a>
+                  </li>
+
+                  <li>
+                      <a class="" href="#/completed">
+                          Completed
+                      </a>
+                  </li>
+              </ul>
+              <button class="clear-completed" hidden=true>
+                  Clear completed (0)
+              </button>
+          </footer>
+      </section>
+      <footer class="info">
+          <p>
+              Double-click to edit a todo
+          </p>
+          <p>
+              Written by
+              <a href="https://github.com/evancz">
+                  Evan Czaplicki
+              </a>
+          </p>
+          <p>
+              Part of
+              <a href="http://todomvc.com">
+                  TodoMVC
+              </a>
+          </p>
+      </footer>
+  </div>
 </body>
 
+<script type="text/javascript" src="elm.js"></script>
 <script type="text/javascript">
+document.querySelector('body').innerHTML = '';
+
 var storedState = localStorage.getItem('elm-todo-save');
 var startingState = storedState ? JSON.parse(storedState) : null;
 var todomvc = Elm.Todo.fullscreen(startingState);
